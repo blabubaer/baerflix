@@ -52,6 +52,10 @@ function goto_details(movie_id) {
         model.current_movie.genre = response.genres
         model.current_movie.plot = response.overview
         model.current_movie.trailer_url = ''
+        model.current_movie.shelf_pos = [1,'green']
+
+        var now = new Date()
+        console.log('update_current_movie: '+now.getSeconds() + 'min '+ now.getMilliseconds() +'s')
         
     }
 
@@ -71,6 +75,8 @@ function goto_details(movie_id) {
                         model.current_movie.age_restriction = result.release_dates[0].certification
                     }    
                 }
+                var now = new Date()
+                console.log('cert_listener: '+now.getSeconds() + 'min '+ now.getMilliseconds() +'s')
             }
             else{
                 console.log('There was a problem getting the files from the database')
@@ -95,16 +101,19 @@ function goto_details(movie_id) {
                     }
                 }
                 model.current_movie.cast = cast_list
+                var now = new Date()
+                console.log('cast_listener: '+now.getSeconds() + 'min '+ now.getMilliseconds() +'s')
             }
             else{
                 console.log('There was a problem getting the files from the database')
             }
         }
     }
+    console.log(model)
+    var now = new Date()
+    console.log('finished function '+now.getSeconds() + 'min '+ now.getMilliseconds() +'s')
 }
 
-
-goto_details(filmcode)
 /*
 var req = new XMLHttpRequest();
 req.addEventListener('load', listener);
