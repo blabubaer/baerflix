@@ -23,13 +23,13 @@ function change_baseurl(){
 
 // choosing a movie on homepage
 function goto_details(movie_id) {
+    
+    //Get Movie details
+
     var req = new XMLHttpRequest();
     req.onreadystatechange = movie_listener;
     req.open("GET", `https://api.themoviedb.org/3/movie/${movie_id}?api_key=${api_key}&language=de`);
     req.send();
-
-
-
 
     function movie_listener(){
         if (req.readyState == XMLHttpRequest.DONE) {
@@ -55,23 +55,6 @@ function goto_details(movie_id) {
         
     }
 
-
-
-
-    /*
-    model.current_movie = {
-        poster_url: '',
-        title: '',
-        release_year: '',
-        length: '',
-        age_restriction: '',
-        cast: [],
-        genre: [],
-        plot: '',
-        trailer_url: '',
-    }
-    */
-
     //setting Age restriction:
     var cert_req = new XMLHttpRequest();
     cert_req.onreadystatechange = cert_listener;
@@ -81,9 +64,13 @@ function goto_details(movie_id) {
     function cert_listener(){
         if (req.readyState == XMLHttpRequest.DONE) {
             if(req.status == 200){
-                //var response = JSON.parse(this.responseText)
-                console.log(this.responseText)
+                var response = JSON.parse(this.responseText)
                 
+                for (var result of response.results) {
+                    if (result.iso_3166_1 == "DE"){
+                        model.current_movie.age_restriction = result.release_dates[0].certification
+                    }    
+                }
             }
             else{
                 console.log('There was a problem getting the files from the database')
@@ -91,7 +78,32 @@ function goto_details(movie_id) {
         }
     }
 
+    // Getting the cast
+    var cast_req = new XMLHttpRequest();
+    cast_req.onreadystatechange = cast_listener;
+    cast_req.open("GET", `https://api.themoviedb.org/3/movie/${movie_id}/credits?api_key=${api_key}`);
+    cast_req.send();
+
+    function cast_listener(){
+        if (req.readyState == XMLHttpRequest.DONE) {
+            if(req.status == 200){
+                var response = JSON.parse(this.responseText)
+                cast_list = []
+                for (var cast of response.cast){
+                    if(cast_list.length < 4){
+                        cast_list.push(cast.name)
+                    }
+                }
+                model.current_movie.cast = cast_list
+            }
+            else{
+                console.log('There was a problem getting the files from the database')
+            }
+        }
+    }
 }
+
+
 goto_details(filmcode)
 /*
 var req = new XMLHttpRequest();

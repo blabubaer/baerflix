@@ -1,6 +1,6 @@
 // Model
 var model = {
-    page: 0, // 0=Home, 1=details, 2=new-movie
+    page: 1, // 0=Home, 1=details, 2=new-movie
     current_movie: {}, //Currently chosen movie
     baseurl: ''
 
