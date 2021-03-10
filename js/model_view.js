@@ -17,7 +17,7 @@ function view() {
       var homepage = `
         <div class="row">
             <div class="main_logo">
-                <img src="./src/baerflix_logo.svg" alt="Baerflix-Logo" style="max-width: 100%;" onclick="goto_details(9929)">
+                <img src="./src/baerflix_logo.svg" alt="Baerflix-Logo" style="max-width: 100%;" onclick="get_detail_data(9929)">
             </div>
             <div class="intro_text">
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus
