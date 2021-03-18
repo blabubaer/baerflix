@@ -81,6 +81,9 @@ async function get_detail_data(movie_id){
             var index = data.overview.indexOf(movie_id.toString())
             model.current_movie.shelf_pos = data.detail_list[index].shelf_pos
             model.current_movie.yt_code = data.detail_list[index].yt_code
+            model.current_movie.spoken_lang = data.detail_list[index].spoken_lang
+            model.current_movie.sub_lang = data.detail_list[index].sub_lang
+            model.current_movie.movie_id = movie_id
             
         }
         else if(model.page == 2){
@@ -99,6 +102,11 @@ async function linkto(aim){
         view()
     }
     else if(aim=="new"){
+        model.page = 2
+        model.current_movie = {}
+        view()
+    }
+    else if(aim == "edit"){
         model.page = 2
         view()
     }
@@ -133,12 +141,12 @@ function choose(item) {
     }
 }
 // handles the save button and save all information into the data
-function save(){
+async function save(){
     var audio_checkboxes = [
         document.getElementById("s-de"),
         document.getElementById("s-en"),
-        document.getElementById("s-nor")
-        ,document.getElementById("s-fr"),
+        document.getElementById("s-nor"),
+        document.getElementById("s-fr"),
         document.getElementById("s-other"),
     ]
     var sub_checkboxes = [
@@ -158,7 +166,6 @@ function save(){
     else if (!checkbox_check(audio_checkboxes)) alert("Please choose at least one audio language!");
     else if (!checkbox_check(sub_checkboxes)) alert("Please choose at least one subtitle language!")
     else {
-        data.overview.push(model.current_movie.movie_id);
         var movie_det = {
             db_id: model.current_movie.movie_id,
             yt_code: model.current_movie.yt_code,
@@ -174,10 +181,59 @@ function save(){
         }
         movie_det.spoken_lang = spoken_lang;
         movie_det.sub_lang = sub_lang
+        
+        let save_Promise = new Promise(function(resolve, reject) {
+            var data = JSON.stringify({
+                items : [
+                    {
+                        media_type:"movie",
+                        media_id : movie_det.db_id,
+                    }
+                ]
+            })
+            var save_req = new XMLHttpRequest();
+            save_req.open("POST", `https://api.themoviedb.org/4/list/${access_data.list_id}/items`);
+            save_req.setRequestHeader("content-type", "application/json;charset=utf-8");
+            save_req.setRequestHeader("authorization", `Bearer ${access_data.access_token}`);
+            save_req.onload = function(){
+                if(save_req.status == 200) {resolve(JSON.parse(this.responseText));}
+                else {resolve('Damn... something went wrong...');}
+            };
+            save_req.send(data);
+        });
 
-        data.detail_list.push(movie_det)
+        var result = await save_Promise
+        if(typeof result == 'string') alert(result)
+        let comment_Promise = new Promise(function(resolve, reject) {
+            var data = JSON.stringify({
+                items : [
+                    {
+                        media_type:"movie",
+                        media_id : movie_det.db_id,
+                        comment: JSON.stringify(movie_det)
+                    }
+                ]
+            })
+            var comment_req = new XMLHttpRequest();
+            comment_req.open("PUT", `https://api.themoviedb.org/4/list/${access_data.list_id}/items`);
+            comment_req.setRequestHeader("content-type", "application/json;charset=utf-8");
+            comment_req.setRequestHeader("authorization", `Bearer ${access_data.access_token}`);
+            comment_req.onload = function(){
+                if(comment_req.status == 200) {resolve(JSON.parse(this.responseText));}
+                else {resolve('Damn... something went wrong...');}
+            };
+            comment_req.send(data);
+        });
+        var update_result = await comment_Promise
+        if(typeof update_result == 'string') alert(result)
+        data = {
+            overview: [],
+            detail_list:[],
+        }
+        await get_list()
         linkto(data.overview[data.overview.length - 1])
     }
+    
 }
 //checks if the checkboxes have been chosen
 function checkbox_check(list_of_boxes) {
@@ -190,6 +246,16 @@ function checkbox_check(list_of_boxes) {
 }
 // gets the list of movies from themoviedb and updates data 
 async function get_list(){
+    let base_url_Promise = new Promise(function(resolve, reject) {
+        var baseurl_req = new XMLHttpRequest();
+        baseurl_req.open("GET", `https://api.themoviedb.org/3/configuration?api_key=${api_key}`);
+        baseurl_req.onload = function(){
+            if(baseurl_req.status == 200) {resolve(JSON.parse(this.responseText));}
+            else {resolve('Base URL not found');}
+        };
+        baseurl_req.send();
+    });
+
     let list_data_Promise = new Promise(function(resolve, reject) {
         var list_data = new XMLHttpRequest();
         list_data.open("GET", `https://api.themoviedb.org/4/list/${access_data.list_id}?api_key=${api_key}`);
@@ -197,15 +263,28 @@ async function get_list(){
         list_data.setRequestHeader("authorization", 'Bearer '+ access_data.access_token);
         list_data.onload = function(){
             if(list_data.status == 200) {resolve(JSON.parse(this.responseText));}
-            else {resolve('Base URL not found');}
+            else {resolve('List-Data not found');}
         };
         list_data.send();
     });
-    let list_resolve = await list_data_Promise
-    console.log(list_resolve)
-    for (const comment in list_resolve.comments) {
-        data.detail_list.push(JSON.parse(list_resolve.comments[comment]))
-        data.overview.push(JSON.parse(list_resolve.comments[comment]).db_id)
-    }
+    await Promise.all([base_url_Promise,list_data_Promise]).then((responses) => {
+        for( var response of responses) {
+            if (typeof response === 'string') {
+                alert(response)
+                return
+            }
+        }
+        data.base_url = responses[0].images.base_url
+        var list_resolve = responses[1]
+        for (const comment in list_resolve.comments) {
+            data.detail_list.push(JSON.parse(list_resolve.comments[comment]))
+            data.overview.push(JSON.parse(list_resolve.comments[comment]).db_id)
+            for (var movie of list_resolve.results){
+                if(movie.id == JSON.parse(list_resolve.comments[comment]).db_id){
+                    data.detail_list[data.detail_list.length-1].poster_url = data.base_url + 'original' + movie.poster_path
+                }
+            } 
+        }
+    })
     
 }

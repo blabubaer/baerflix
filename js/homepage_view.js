@@ -1,7 +1,14 @@
 async function homepage_view(){
-    await get_list()
+    var homepage = header_view()
     var cards_list = ``
-    var homepage = `
+    for (var movie of data.detail_list) {
+        cards_list += `
+            <div class="card" id="${movie.db_id}" onclick="linkto(this.id)">
+                <img src="${movie.poster_url}">
+            </div>
+        `
+    }
+    homepage += `
     <div class="row">
         <div class="main_logo">
             <img src="./src/baerflix_logo.svg" alt="Baerflix-Logo" style="max-width: 100%;">
@@ -25,75 +32,9 @@ async function homepage_view(){
                 metus, ullamcorper vel, tincidunt sed, euismod in, nibh. </p>
         </div>
     </div>
-    <div class="row">
-        <div class="container">
-            <div class="card">
-                <img src="./test/a1.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a2.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a3.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a4.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a5.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a6.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a1.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a2.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a3.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a4.jpg">
-            </div>
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="container">
-            <div class="card">
-                <img src="./test/a1.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a2.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a3.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a4.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a5.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a6.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a1.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a2.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a3.jpg">
-            </div>
-            <div class="card">
-                <img src="./test/a4.jpg">
-            </div>
-
-        </div>
-    </div>`;
+    <div class="row">`
+    homepage += cards_list
+    homepage += '</div>'
+    ;
   appDiv.innerHTML = homepage;
 }

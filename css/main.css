@@ -69,7 +69,17 @@ body {
     border: solid 1px;
     border-radius: 5px;
     background-color: #DB202C;
-    padding: 0 0.5rem 0 0.5rem; 
+    padding: 0 0.5rem 0 0.5rem;
+    margin-right: 1rem; 
+}
+#edit-button {
+    font-size: 2rem;
+    border: solid 1px;
+    border-radius: 5px;
+    background-color: blue;
+    padding: 0 0.5rem 0 0.5rem;
+    margin-right: 1rem;
+    display: none; 
 } 
 #app { 
     color: white; 

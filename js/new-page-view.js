@@ -1,7 +1,9 @@
 function new_page_view(id){
+    var newpage = header_view()
     var list_cast = ``;
     var list_genre = ``
     var status = 'inactive'
+    var edit = ['Shelfnumber','Shelfcolor']
     var test_movie = {
         title:"",
         release_year: "",
@@ -18,14 +20,17 @@ function new_page_view(id){
             list_genre += `<li>${genre.name}</li>`;
         }
     }
+    if(model.current_movie.shelf_pos != [] && model.current_movie.shelf_pos){
+        edit = model.current_movie.shelf_pos
+    }
 
     var movie_id
-    if (model.current_movie.movie_id) movie_id = id
+    if (model.current_movie.movie_id) movie_id = model.current_movie.movie_id
     else movie_id = ""
     
 
 
-    newpage = `
+    newpage += `
         <div class="row">
             <h2 class="rowtitle_a">Movie ID:</h2>
             <div class="searchfield">
@@ -43,7 +48,7 @@ function new_page_view(id){
             <div class="row">
                 <div class="shelfnumber">
                     <div class="dropdown">
-                        <button class="dropbtn">Shelf-Number</button>
+                        <button class="dropbtn">${edit[0]}</button>
                         <div class="dropdown-content">
                             <div onclick="choose(this)">1</div>
                             <div onclick="choose(this)">2</div>
@@ -53,7 +58,7 @@ function new_page_view(id){
                 </div>
                 <div class="shelfnumber">
                     <div class="dropdown">
-                        <button class="dropbtn">Shelf-Color</button>
+                        <button class="dropbtn">${edit[1]}</button>
                         <div class="dropdown-content">
                             <div onclick="choose(this)" >Red</div>
                             <div onclick="choose(this)" >Blue</div>

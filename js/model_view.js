@@ -16,4 +16,8 @@ function view() {
     // New-Page
     else if(model.page == 2) new_page_view()
 }
-view()
+async function start() {
+    await get_list()
+    view()
+}
+start()
