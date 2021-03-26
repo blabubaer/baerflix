@@ -54,6 +54,7 @@ body {
     margin-left: 5px;
     margin-bottom: 5px;
     text-align: center;
+    cursor: pointer;
 }
 .homebutton > * {
     float: left;
@@ -70,7 +71,8 @@ body {
     border-radius: 5px;
     background-color: #DB202C;
     padding: 0 0.5rem 0 0.5rem;
-    margin-right: 1rem; 
+    margin-right: 1rem;
+    cursor: pointer; 
 }
 #edit-button {
     font-size: 2rem;
@@ -79,7 +81,8 @@ body {
     background-color: blue;
     padding: 0 0.5rem 0 0.5rem;
     margin-right: 1rem;
-    display: none; 
+    display: none;
+    cursor: pointer; 
 } 
 #app { 
     color: white; 
@@ -98,9 +101,11 @@ body {
     height: 250px; 
     padding: 10px; 
     flex: 0 0 auto;
+    cursor: pointer;
 }
 .card img{
     height: 90%;
+    border-radius: 5px;
 }
 
 /* Details-Page */
@@ -175,11 +180,11 @@ body {
     margin-bottom: 0.5rem
 }
 /* New-Movie Page*/
-.searchfield, .savebutton, .searchbutton{
+.searchfield, .savebutton, .searchbutton, .deletebutton{
     padding: 2rem;
 }
 
-.button-s,.s-button {
+.button-s,.s-button,.d-button {
     padding: 1rem 1.5rem;
     font-size: 1.5rem;
     cursor: pointer;
@@ -200,8 +205,15 @@ body {
 .s-button {
      border: 2px solid green;
 }
+
 .s-button:hover {
      background-color: green;
+}
+.d-button {
+    border: 2px solid red;
+}
+.d-button:hover{
+    background-color: red;
 }
 .inactive {
     display: none;
@@ -238,6 +250,12 @@ body {
     padding: 0;
     margin-left: 2rem;
 }
+.checkbox {
+    transition-duration: 0.4s;
+}
+.checkbox:hover{
+    border: solid 1px red;
+}
 .details-title {
     margin-left: 2rem;
 }
@@ -261,42 +279,122 @@ body {
     transition-duration: 0.4s;
   }
   
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 10rem;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-  
-  .dropdown-content div {
-    color: black;
-    padding: 0.8rem 1rem;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-  }
-  
-  .dropdown-content div:hover {background-color: #ddd;}
-  
-  .dropdown:hover .dropdown-content {display: block;}
-  
-  .dropdown:hover .dropbtn {background-color: red;}
+.dropdown {
+position: relative;
+display: inline-block;
+}
 
-  .shelfnumber {
-      padding: 0 2rem 1rem 2rem;
+.dropdown-content {
+display: none;
+position: absolute;
+background-color: #f1f1f1;
+min-width: 10rem;
+box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+z-index: 1;
+}
+
+.dropdown-content div {
+color: black;
+padding: 0.8rem 1rem;
+text-align: center;
+text-decoration: none;
+display: block;
+}
+
+.dropdown-content div:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: red;}
+
+.shelfnumber {
+    padding: 0 2rem 1rem 2rem;
+}
+.searchfield_t{
+    padding: 1rem
+}
+.chosen {
+    border: solid 1px green;
+    background-color: green;
+    font-weight: bold;
+}
+
+/* Delete Modal */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
   }
-  .searchfield_t{
-      padding: 1rem
+  
+  /* Modal Content */
+  .modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 3px solid red;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    color: black;
   }
-  .chosen {
-      border: solid 1px green;
-      background-color: green;
-      font-weight: bold;
+  
+  /* Add Animation */
+  @-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0} 
+    to {top:0; opacity:1}
   }
+  
+  @keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+  }
+/* The Close Button */
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .modal-header {
+    padding: 2px 16px;
+    background-color: red;
+    color: white;
+  }
+  
+  .modal-body {padding: 2px 16px;}
+  
+  .modal-footer {
+    padding: 2px 16px;
+    background-color: red;
+    color: white;
+    text-align: center;
+  }
+  .final-button{
+     border: 2px solid black;
+     background-color: black;
+    color: white;
+    margin: 1rem auto 1rem auto;
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    border-radius: 6px;
+    cursor: pointer;
+}

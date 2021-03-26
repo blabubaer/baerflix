@@ -27,8 +27,38 @@ function new_page_view(id){
     var movie_id
     if (model.current_movie.movie_id) movie_id = model.current_movie.movie_id
     else movie_id = ""
-    
+    var trailer_url
+    if (model.current_movie.yt_code) trailer_url = model.current_movie.yt_code
+    else trailer_url = ''
 
+    var lang = {
+        de : ['German','s-de', 'sub-de'],
+        en : ['English','s-en', 'sub-en'],
+        no: ['Norwegian','s-nor', 'sub-nor'],
+        fr: ['French', 's-fr', 'sub-fr'],
+        other: ['Other', 's-other','sub-other'],
+    }
+    var s_boxes = ``
+    var sub_boxes = ``
+    var s_keys = Object.keys(lang)
+    if(!model.current_movie.spoken_lang) {
+        model.current_movie.spoken_lang = []
+        model.current_movie.sub_lang = []
+    }
+    for (key of s_keys){
+        s_boxes += `<li class="checkbox"><input type="checkbox" name="${key}" id="${lang[key][1]}"`
+        if(model.current_movie.spoken_lang.includes(key)){
+            s_boxes += ` checked><label for="${lang[key][1]}">${lang[key][0]}</label></li>`
+        }
+        else s_boxes += `><label for="${lang[key][1]}">${lang[key][0]}</label></li>`
+
+        sub_boxes += `<li class="checkbox"><input type="checkbox" name="${key}" id="${lang[key][2]}"`
+        if(model.current_movie.sub_lang.includes(key)){
+            sub_boxes += ` checked><label for="${lang[key][2]}">${lang[key][0]}</label></li>`
+        }
+        else sub_boxes += `><label for="${lang[key][2]}"> ${lang[key][0]}</label></li>`
+    }
+     
 
     newpage += `
         <div class="row">
@@ -41,6 +71,9 @@ function new_page_view(id){
             </div>
             <div class="savebutton">
                 <button id="savebutton" class="s-button ${status}" onclick="save()">Save</button>
+            </div>
+            <div class="deletebutton">
+                <button id="deletebutton" class="d-button ${status}" onclick="popup_function()">Delete</button>
             </div>
         </div>
         <div class="row ${status}">
@@ -58,7 +91,7 @@ function new_page_view(id){
                 </div>
                 <div class="shelfnumber">
                     <div class="dropdown">
-                        <button class="dropbtn">${edit[1]}</button>
+                        <button class="dropbtn" style="background-color:${edit[1]}">${edit[1]}</button>
                         <div class="dropdown-content">
                             <div onclick="choose(this)" >Red</div>
                             <div onclick="choose(this)" >Blue</div>
@@ -71,28 +104,22 @@ function new_page_view(id){
         <div class="row ${status}" >
             <h3 class="rowtitle">Youtube Trailer Code:</h3>
             <div class="searchfield_t">
-                <input type="text" placeholder="enter YT-Trailer code here"  class="inputfield shelf" id="yt_code_field">
+                <input type="text" placeholder="enter YT-Trailer code here"  class="inputfield shelf" id="yt_code_field" value="${trailer_url}">
             </div>
         </div>
         <div class="row ${status}">
         <div class="spoken-lang">
             <h3 class="details-title">Audio Languages</h3>
-            <ul class="checkbox-list">
-                <li><input type="checkbox" name="de" id="s-de"> German</li>
-                <li><input type="checkbox" name="en" id="s-en"> English</li>
-                <li><input type="checkbox" name="nor" id="s-nor"> Norwegian</li>
-                <li><input type="checkbox" name="fr" id="s-fr"> French</li>
-                <li><input type="checkbox" name="other" id="s-other"> Other Original Language</li>
+            <ul class="checkbox-list">`
+    newpage += s_boxes
+    newpage += `
             </ul>
         </div>
         <div class="sub-lang">
             <h3 class="details-title">Subtitle Languages</h3>
-            <ul class="checkbox-list">
-                <li><input type="checkbox" name="de" id="sub-de"> German</li>
-                <li><input type="checkbox" name="en" id="sub-en"> English</li>
-                <li><input type="checkbox" name="nor" id="sub-nor"> Norwegian</li>
-                <li><input type="checkbox" name="fr" id="sub-fr"> French</li>
-                <li><input type="checkbox" name="other" id="sub-other"> Other</li>
+            <ul class="checkbox-list">`
+    newpage += sub_boxes
+    newpage += `
             </ul>
         </div>
             
@@ -118,15 +145,41 @@ function new_page_view(id){
         <div class="row ${status} last">
             <div class="label">Plot:</div><div class="information">${test_movie.plot}</div>
         </div>
-
     `;
-        appDiv.innerHTML = newpage
 
-        var searchfield = document.getElementById('movie_id_input_field')
-        searchfield.addEventListener("keyup", function(event){
-            if(event.keyCode === 13) {
-                event.preventDefault();
-                search()
-            }
-        })
+    //The delete modal
+    var modal = `
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="x" class="close">&times;</span>
+                <h2>WARNING</h2>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete ${model.current_movie.title} from the list?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="final-button" onclick="delete_movie()">Delete</button>
+            </div>
+        </div>
+
+        </div>
+    `;
+    newpage += modal
+
+    appDiv.innerHTML = newpage
+
+    var searchfield = document.getElementById('movie_id_input_field')
+    searchfield.addEventListener("keyup", function(event){
+        if(event.keyCode === 13) {
+            event.preventDefault();
+            search()
+        }
+    })
+    
+    
+
 }

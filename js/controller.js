@@ -87,7 +87,6 @@ async function get_detail_data(movie_id){
             
         }
         else if(model.page == 2){
-            model.current_movie.shelf_pos = [0,'']
             model.current_movie.yt_code = ''
             model.current_movie.movie_id = movie_id
         }
@@ -127,6 +126,7 @@ async function search(){
 }
 //handles the dropdown menu for the choosing of shelf-pos
 function choose(item) {
+    if(!model.current_movie.shelf_pos) model.current_movie.shelf_pos=[]
     var display_label = item.parentNode.previousElementSibling
     if(item.innerHTML.length < 2){
         display_label.textContent = item.innerHTML
@@ -157,6 +157,7 @@ async function save(){
         document.getElementById("sub-other"),
     ]
     model.current_movie.yt_code = document.getElementById("yt_code_field").value
+    
     if (model.current_movie.shelf_pos[0] == 0) alert("Please choose a shelf position!");
     else if (model.current_movie.shelf_pos[1] == "") alert("Please choose a shelf color!");
     else if (model.current_movie.yt_code == "") alert("Please enter a Youtube Code");
@@ -231,7 +232,7 @@ async function save(){
             detail_list:[],
         }
         await get_list()
-        linkto(data.overview[data.overview.length - 1])
+        linkto(model.current_movie.movie_id)
     }
     
 }
@@ -246,6 +247,10 @@ function checkbox_check(list_of_boxes) {
 }
 // gets the list of movies from themoviedb and updates data 
 async function get_list(){
+    data = {
+        overview: [],
+        detail_list:[],
+    }
     let base_url_Promise = new Promise(function(resolve, reject) {
         var baseurl_req = new XMLHttpRequest();
         baseurl_req.open("GET", `https://api.themoviedb.org/3/configuration?api_key=${api_key}`);
@@ -288,3 +293,46 @@ async function get_list(){
     })
     
 }
+
+async function delete_movie(){
+    let delete_Promise = new Promise(function(resolve, reject){
+        var data = JSON.stringify({
+            items: [
+                {
+                    media_type : 'movie',
+                    media_id: model.current_movie.movie_id
+                }
+            ]
+        })
+        var delete_req = new XMLHttpRequest();
+        delete_req.open("DELETE", `https://api.themoviedb.org/4/list/${access_data.list_id}/items`);
+        delete_req.setRequestHeader("authorization",`Bearer ${access_data.access_token}`);
+        delete_req.setRequestHeader("content-type", "application/json;charset=utf-8");
+        delete_req.onload = function(){
+            if(delete_req.status == 200) resolve(JSON.parse(this.responseText));
+            else resolve('Deleting this seems to be a problem! Please contact the system admin!')
+        }
+        delete_req.send(data)
+    })
+    var result = await delete_Promise
+    if(typeof result == 'string') alert(result)
+    else{
+        alert('Deleting successful')
+        await get_list()
+        linkto('home')
+    }
+
+}
+function popup_function(){
+    var modal = document.getElementById("myModal")
+    var span = document.getElementById("x")
+    span.onclick = function() {
+        modal.style.display = "none"
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display="none";
+        }
+    }
+    modal.style.display="block"
+}   
