@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Test Suite</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.14.1.css">
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.14.1.js"></script>
+    <script src="./js/data.js"></script>
+    <script src="./js/controller.js"></script>
+    <script src="./js/model_view.js"></script>
+    
+    <script>
+        //testing of the get detail function. The function should take a movie ID from themoviedb.com and put the information into the model using an API request.
+        // two test that show the functions works with the right input
+        QUnit.module('getting Harry Potter 1 info', function () {
+            QUnit.test(`should put the model.current_movie.title to "Harry Potter and the Philosopher's Stone"`, async function (assert) {
+                await get_detail_data(671)
+                assert.equal(model.current_movie.title, "Harry Potter and the Philosopher's Stone")
+                
+            });
+        });
+        QUnit.module('getting Banana Joe info', function () {
+            QUnit.test(`should put the model.current_movie.release_year to "1982"`, async function (assert) {
+                await get_detail_data(11340)
+                assert.equal(model.current_movie.release_year, "1982");
+            });
+        });
+        //two test that show the handling of false input
+
+        QUnit.module('putting an invalid number into the searchfield', function () {
+            QUnit.test(`should put return "Movie Details not found"`, async function (assert) {
+                assert.equal(await get_detail_data(46546546546546), "Movie Details not found");
+            });
+        });
+        
+        QUnit.module('puttin a string instead of a number', function () {
+            QUnit.test(`should put the model.current_movie.release_year to "1982"`, async function (assert) {
+                assert.equal(await get_detail_data("test"), "Movie Details not found");
+            });
+        });
+        
+    </script>
+    
+</body>
+</html>

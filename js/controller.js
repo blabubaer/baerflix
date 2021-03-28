@@ -1,5 +1,5 @@
 //Test daten
-var api_key = '08d1a9c6775524c82cd391be81409ac3' 
+var api_key =  access_data.api_key
 
 //getting detail info for one movie
 async function get_detail_data(movie_id){
@@ -47,14 +47,16 @@ async function get_detail_data(movie_id){
     });
 
     //when all the data arrives
-    await Promise.all([base_url_Promise,movie_detail_Promise,release_dates_Promise,cast_Promise]).then((responses) => {
+    var fail = await Promise.all([base_url_Promise,movie_detail_Promise,release_dates_Promise,cast_Promise]).then((responses) => {
         //Check if anything went wrong and display the failure reason as alert
         for( var response of responses) {
             if (typeof response === 'string') {
                 alert(response)
-                return
+                console.log(response)
+                return response
             }
         }
+        console.log('test')
         //response= 0:Object -> Base-URL , 1: Object -> Movie-Details, 2: Object ->  Agerestriction, 3: Object -> Cast
         model.baseurl = responses[0].images.base_url;
         model.current_movie.poster_url = model.baseurl +'original'+ responses[1].poster_path
@@ -93,6 +95,7 @@ async function get_detail_data(movie_id){
         return 
 
     });
+    return fail
 };
 //for switching between pages
 async function linkto(aim){
@@ -120,8 +123,8 @@ async function linkto(aim){
 async function search(){
     var search_value = document.getElementById("movie_id_input_field").value
     get_detail_data(search_value).then((value)=>{
-        new_page_view(search_value)
-    })
+    new_page_view(search_value)
+})
 
 }
 //handles the dropdown menu for the choosing of shelf-pos
@@ -293,7 +296,7 @@ async function get_list(){
     })
     
 }
-
+//deletes a movie from the database
 async function delete_movie(){
     let delete_Promise = new Promise(function(resolve, reject){
         var data = JSON.stringify({
@@ -323,6 +326,7 @@ async function delete_movie(){
     }
 
 }
+// pops up an extra questions if the movie should really be deleted
 function popup_function(){
     var modal = document.getElementById("myModal")
     var span = document.getElementById("x")
